@@ -1,0 +1,5 @@
+{
+  "name": "EEC Lab Resources Management System",
+  "description": "A web application for managing component inventory, 3D printer reservations, and user access in an electronics lab.",
+  "requestFramePermissions": []
+}
