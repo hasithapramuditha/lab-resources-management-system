@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: eec_lab_db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-eec_lab_db}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-your_password}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend
+    container_name: eec_lab_backend
+    depends_on:
+      - db
+    environment:
+      NODE_ENV: production
+      PORT: 5001
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-eec_lab_db}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-your_password}
+      JWT_SECRET: ${JWT_SECRET:-change_me}
+    ports:
+      - "5001:5001"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:5001/api}
+        VITE_SOCKET_URL: ${VITE_SOCKET_URL:-http://localhost:5001}
+    container_name: eec_lab_frontend
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+
+volumes:
+  db_data:
+
+
